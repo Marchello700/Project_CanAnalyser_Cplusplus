@@ -1,0 +1,13 @@
+#ifndef canDataH
+#define canDataH
+
+enum CanVersion { a, b};
+
+struct CanDataFrame {
+	int id;
+	int dlc;
+	int data[8];
+    canVersion version;
+};
+
+#endif //canDataH
