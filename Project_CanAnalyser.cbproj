@@ -64,8 +64,8 @@
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <UWP_CppLogo44>$(BDS)\bin\Artwork\Windows\UWP\cppreg_UwpDefault_44.png</UWP_CppLogo44>
         <UWP_CppLogo150>$(BDS)\bin\Artwork\Windows\UWP\cppreg_UwpDefault_150.png</UWP_CppLogo150>
-        <IncludePath>Headers\;Classes\;ProjectGroup_Can\Project_CanAnalyser\;$(IncludePath)</IncludePath>
-        <ILINK_LibraryPath>Headers\;Classes\;ProjectGroup_Can\Project_CanAnalyser\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <IncludePath>Namespaces\;Headers\;Classes\;ProjectGroup_Can\Project_CanAnalyser\;$(IncludePath)</IncludePath>
+        <ILINK_LibraryPath>Namespaces\;Headers\;Classes\;ProjectGroup_Can\Project_CanAnalyser\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <SanitizedProjectName>Project_CanAnalyser</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
@@ -121,13 +121,13 @@
         <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
     </PropertyGroup>
     <ItemGroup>
-        <CppCompile Include="Classes\CanScannerParser.cpp">
-            <BuildOrder>5</BuildOrder>
+        <CppCompile Include="Classes\CanData.cpp">
+            <BuildOrder>6</BuildOrder>
         </CppCompile>
         <None Include="Headers\CanData.h">
             <BuildOrder>4</BuildOrder>
         </None>
-        <None Include="Headers\CanScannerParser.h">
+        <None Include="Headers\CanParser.h">
             <BuildOrder>6</BuildOrder>
         </None>
         <CppCompile Include="mainForm.cpp">
@@ -135,6 +135,9 @@
             <FormType>dfm</FormType>
             <DependentOn>mainForm.h</DependentOn>
             <BuildOrder>2</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="Namespaces\CanParser.cpp">
+            <BuildOrder>5</BuildOrder>
         </CppCompile>
         <CppCompile Include="Project_CanAnalyser.cpp">
             <BuildOrder>0</BuildOrder>

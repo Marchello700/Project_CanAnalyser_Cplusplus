@@ -1,0 +1,11 @@
+#include "CanData.h"
+#include <string>
+
+#ifndef canParserH
+#define canParserH
+
+namespace CanParser {
+	bool CanScannerParser(const std::string line, struct CanDataFrame * result);
+}
+
+#endif //canParserH

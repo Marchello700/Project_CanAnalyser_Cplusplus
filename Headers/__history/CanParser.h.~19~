@@ -1,0 +1,11 @@
+#include "CanData.h"
+#include <string>
+
+#ifndef canParserH
+#define canParserH
+
+namespace CanParser {
+	CanDataFrame * CanScannerParser(const UnicodeString line);
+}
+
+#endif //canParserH

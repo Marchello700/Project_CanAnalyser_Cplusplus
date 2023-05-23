@@ -1,0 +1,44 @@
+#include "CanData.h"
+
+
+int CanDataFrame::getId()
+{
+	return m_id;
+};
+
+void CanDataFrame::setId(int value)
+{
+	m_id = value;
+}
+
+int CanDataFrame::getDlc()
+{
+	return m_dlc;
+}
+
+void CanDataFrame::setDlc(int value)
+{
+	m_dlc = value;
+}
+
+const int * CanDataFrame::getData()
+{
+	return m_data;
+};
+
+void CanDataFrame::setData(int value[], int length)
+{
+	for (int i = 0; i < std::min(length,8); i++) {
+		m_data[i] = value[i];
+	}
+};
+
+CanVersion CanDataFrame::getVersion()
+{
+	return m_version;
+}
+
+void sCanDataFrame::etVersion(CanVersion value)
+{
+	m_version = value;
+}

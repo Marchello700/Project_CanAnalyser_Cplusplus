@@ -11,6 +11,13 @@ object Form1: TForm1
   Font.Name = 'Segoe UI'
   Font.Style = []
   TextHeight = 15
+  object Label1: TLabel
+    Left = 838
+    Top = 147
+    Width = 95
+    Height = 15
+    Caption = 'List of loaded files'
+  end
   object Memo1: TMemo
     Left = 8
     Top = 37
@@ -44,22 +51,40 @@ object Form1: TForm1
     Height = 23
     TabOrder = 3
     Text = 'ComboBox1'
+    OnChange = ComboBox1Change
   end
   object ComboBox2: TComboBox
-    Left = 320
+    Left = 311
     Top = 8
     Width = 145
     Height = 23
     TabOrder = 4
     Text = 'ComboBox2'
+    OnChange = ComboBox2Change
   end
   object Memo2: TMemo
-    Left = 320
+    Left = 311
     Top = 37
     Width = 297
     Height = 292
     Lines.Strings = (
       'Memo1')
     TabOrder = 5
+  end
+  object IdListBox1: TListBox
+    Left = 8
+    Top = 335
+    Width = 297
+    Height = 254
+    ItemHeight = 15
+    TabOrder = 6
+  end
+  object IdListBox2: TListBox
+    Left = 311
+    Top = 335
+    Width = 297
+    Height = 254
+    ItemHeight = 15
+    TabOrder = 7
   end
 end
