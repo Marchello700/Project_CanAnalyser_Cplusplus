@@ -11,6 +11,12 @@ namespace CanParser {
 		int data[8] = {0,0,0,0,0,0,0,0,};
         CanVersion version;
 		std::string temp_line = line;
+        //workaround for files with time data, parsing of time data not implemented yet
+        int time_index = temp_line.find(']');
+		if (time_index != -1) {
+			temp_line.erase(0,time_index+1);
+		}
+
 		//remove spaces
 		temp_line.erase(remove_if(temp_line.begin(), temp_line.end(), isspace), temp_line.end());
         //change all a-f letters to uppercase A-F

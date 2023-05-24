@@ -28,6 +28,8 @@ public:
 	void setData(int value[], int length);
 	CanVersion getVersion();
 	void setVersion(CanVersion value);
+
+    __fastcall UnicodeString ToString();
 };
 
 class TCanDataFrameEx : TCanDataFrame {

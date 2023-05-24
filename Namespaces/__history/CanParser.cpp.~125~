@@ -1,0 +1,55 @@
+#include "CanParser.h"
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+
+namespace CanParser {
+	TCanDataFrame * CanScannerParser(const std::string line)
+	{
+		int id;
+		int dlc;
+		int data[8] = {0,0,0,0,0,0,0,0,};
+        CanVersion version;
+		std::string temp_line = line;
+        int time_index = temp_line.find(']');
+		if (time_index != -1) {
+			temp_line.erase(0,time_index+1);
+		}
+
+		//remove spaces
+		temp_line.erase(remove_if(temp_line.begin(), temp_line.end(), isspace), temp_line.end());
+        //change all a-f letters to uppercase A-F
+		//std::transform(temp_line.begin(), temp_line.end(), temp_line.begin(), ::toupper);
+		int separator_index = temp_line.find('-');
+		switch (separator_index) {
+			case 3:                     //2.0A version IDs range 000-7FF, length 3 symbols
+				version = a;
+				break;
+			case 8:                     //2.0B version IDs range 00000000-1FFFFFFF, length 8 symbols
+				version = b;
+				break;
+			default:
+                return NULL;
+				break;
+		}
+		id = stoi(temp_line.substr(0,separator_index),0,16);
+		std::string data_string = temp_line.substr(separator_index+1,temp_line.length()-1-separator_index);
+		if (data_string.length() % 2) {
+			return NULL;//data is presented in bytes, two symbols per byte, uneven amount of symbols indicate error in string
+		}
+		if ((data_string.length() / 2) > 8) {
+			return NULL;//single data frame can contain only 8 bytes at maximum
+		}
+		dlc = data_string.length() / 2;
+		for (int i = 0; i < dlc; i++) {
+			data[i] = stoi(data_string.substr(i * 2, 2), 0, 16);
+		}
+		TCanDataFrame * data_frame = new TCanDataFrame();
+		data_frame->setId(id);
+		data_frame->setVersion(version);
+		data_frame->setDlc(dlc);
+        data_frame->setData(data,dlc);
+        return data_frame;
+	}
+}
+

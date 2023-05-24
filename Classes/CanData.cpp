@@ -1,4 +1,5 @@
 #include "CanData.h"
+#include <sstream>
 
 int TCanDataFrame::getId()
 {
@@ -40,4 +41,24 @@ CanVersion TCanDataFrame::getVersion()
 void TCanDataFrame::setVersion(CanVersion value)
 {
 	m_version = value;
+}
+
+__fastcall UnicodeString TCanDataFrame::ToString()
+{
+	std::ostringstream ss;
+    ss.fill('0');
+	if (m_version) {
+		ss.width(8);
+	}
+	else {
+		ss.width(3);
+	}
+	ss << std::hex << this->m_id << " -";
+	for (int i = 0; i < m_dlc; i++) {
+		ss << " ";
+		ss.width(2);
+		ss << std::hex << this->m_data[i] ;
+	}
+    std::string str = ss.str();
+    return str.c_str();
 }

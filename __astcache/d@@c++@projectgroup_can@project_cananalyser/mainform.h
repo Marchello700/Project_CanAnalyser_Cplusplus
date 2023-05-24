@@ -9,6 +9,8 @@
 #include <Vcl.Forms.hpp>
 #include <Vcl.Dialogs.hpp>
 #include <list>
+#include <map>
+#include "CanData.h"
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
@@ -23,12 +25,18 @@ __published:	// IDE-managed Components
 	TListBox *IdListBox1;
 	TListBox *IdListBox2;
 	TLabel *Label1;
+	TButton *FilterButton1;
+	TButton *FilterButton2;
 	void __fastcall LoadFileButtonClick(TObject *Sender);
-	void __fastcall ComboBox1Change(TObject *Sender);
-	void __fastcall ComboBox2Change(TObject *Sender);
+	void __fastcall ComboBox1CloseUp(TObject *Sender);
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall FilterButton1Click(TObject *Sender);
+	void __fastcall ComboBox2CloseUp(TObject *Sender);
+	void __fastcall FilterButton2Click(TObject *Sender);
 private:	// User declarations
 	TOpenDialog * OpenDialog;
 	TSaveDialog * SaveDialog;
+	std::map<UnicodeString,TObjectList*> * file_list;
 
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);
@@ -37,6 +45,7 @@ public:		// User declarations
 	void __fastcall LoadIdListInListBox(std::list<int> * id_list, TListBox * list_box);
     void __fastcall UpdateComboBox(TComboBox * combo_box, TStrings * file_list);
 	std::list<int> * __fastcall GetUniqueIdList(TObjectList * can_data_list);
+    std::list<int> * __fastcall GetSelectedIdListFromListBox(TListBox * list_box);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TForm1 *Form1;

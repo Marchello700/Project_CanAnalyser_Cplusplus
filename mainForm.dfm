@@ -2,14 +2,15 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Main'
-  ClientHeight = 653
-  ClientWidth = 941
+  ClientHeight = 652
+  ClientWidth = 937
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  OnCreate = FormCreate
   TextHeight = 15
   object Label1: TLabel
     Left = 838
@@ -20,9 +21,9 @@ object Form1: TForm1
   end
   object Memo1: TMemo
     Left = 8
-    Top = 37
+    Top = 96
     Width = 297
-    Height = 292
+    Height = 233
     Lines.Strings = (
       'Memo1')
     TabOrder = 0
@@ -46,27 +47,27 @@ object Form1: TForm1
   end
   object ComboBox1: TComboBox
     Left = 8
-    Top = 8
-    Width = 145
+    Top = 67
+    Width = 297
     Height = 23
+    Style = csDropDownList
     TabOrder = 3
-    Text = 'ComboBox1'
-    OnChange = ComboBox1Change
+    OnCloseUp = ComboBox1CloseUp
   end
   object ComboBox2: TComboBox
     Left = 311
-    Top = 8
-    Width = 145
+    Top = 67
+    Width = 297
     Height = 23
+    Style = csDropDownList
     TabOrder = 4
-    Text = 'ComboBox2'
-    OnChange = ComboBox2Change
+    OnCloseUp = ComboBox2CloseUp
   end
   object Memo2: TMemo
     Left = 311
-    Top = 37
+    Top = 96
     Width = 297
-    Height = 292
+    Height = 233
     Lines.Strings = (
       'Memo1')
     TabOrder = 5
@@ -77,6 +78,7 @@ object Form1: TForm1
     Width = 297
     Height = 254
     ItemHeight = 15
+    MultiSelect = True
     TabOrder = 6
   end
   object IdListBox2: TListBox
@@ -85,6 +87,25 @@ object Form1: TForm1
     Width = 297
     Height = 254
     ItemHeight = 15
+    MultiSelect = True
     TabOrder = 7
+  end
+  object FilterButton1: TButton
+    Left = 8
+    Top = 24
+    Width = 75
+    Height = 25
+    Caption = 'Filter'
+    TabOrder = 8
+    OnClick = FilterButton1Click
+  end
+  object FilterButton2: TButton
+    Left = 311
+    Top = 24
+    Width = 75
+    Height = 25
+    Caption = 'Filter'
+    TabOrder = 9
+    OnClick = FilterButton2Click
   end
 end

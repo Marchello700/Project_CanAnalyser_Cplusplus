@@ -8,6 +8,7 @@
 #include "CanParser.h"
 #include <System.Generics.Collections.hpp>
 #include <sstream>
+#include <list>
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -21,6 +22,7 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 	SaveDialog = new TSaveDialog(this);
 	OpenDialog->Filter = "Text files (*.txt)|*.TXT|Any file (*.*)|*.*";
 	SaveDialog->Filter = "Text files (*.txt)|*.TXT|Any file (*.*)|*.*";
+	file_list = new std::map<UnicodeString,TObjectList*>();
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::LoadFileButtonClick(TObject *Sender)
@@ -37,7 +39,8 @@ void __fastcall TForm1::LoadFileButtonClick(TObject *Sender)
 __fastcall TForm1::~TForm1()
 {
 	delete OpenDialog;
-    delete SaveDialog;
+	delete SaveDialog;
+    delete file_list;
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::LoadFile(UnicodeString filename)
@@ -59,7 +62,10 @@ void __fastcall TForm1::LoadFile(UnicodeString filename)
 		delete[] str;
 	}
 	delete datafile;
-	FilenameListBox->AddItem(OpenDialog->FileName,can_data_frame_list);
+
+	FilenameListBox->AddItem(OpenDialog->FileName,NULL);
+	this->file_list->emplace(OpenDialog->FileName,can_data_frame_list);
+
 	this->UpdateComboBox(ComboBox1,FilenameListBox->Items);
 	this->UpdateComboBox(ComboBox2,FilenameListBox->Items);
 }
@@ -70,7 +76,7 @@ std::list<int> * __fastcall TForm1::GetUniqueIdList(TObjectList * can_data_list)
 	TCanDataFrame * can_data;
 	std::list<int> * id_list = new std::list<int>();
 	for (auto item : can_data_list) {
-		can_data = (TCanDataFrame*)item;
+		can_data = (TCanDataFrame*)item;//Item casting from TObject to TCanDataFrame because of unusable TObjectList__1<T>, which supports only generic types
         std::list<int>::iterator findIter = std::find(id_list->begin(), id_list->end(), can_data->getId());
 		if (findIter == id_list->end()) {
             id_list->push_back(can_data->getId());
@@ -79,10 +85,30 @@ std::list<int> * __fastcall TForm1::GetUniqueIdList(TObjectList * can_data_list)
 	return id_list;
 }
 //---------------------------------------------------------------------------
+std::list<int> * __fastcall TForm1::GetSelectedIdListFromListBox(TListBox * list_box)
+{
+	std::list<int> * id_list = new std::list<int>();
+	for (int i = 0; i < list_box->Count; i++) {
+		if (list_box->Selected[i]) {
+			//workaround to convert TStrings to std::string
+			AnsiString ansiB(list_box->Items->Strings[i]);
+			char* str = new char[ansiB.Length()+1];
+			strcpy(str, ansiB.c_str());
+			//end of workaround
+			int hex = std::stoi(str,0,16);
+			id_list->push_back(hex);
+		}
+	}
+    return id_list;
+}
+//---------------------------------------------------------------------------
 void __fastcall TForm1::LoadIdListInListBox(std::list<int> * id_list, TListBox * list_box)
 {
+    list_box->Clear();
 	for (auto id : *id_list) {
 		std::ostringstream ss;
+		ss.fill('0');
+        ss.width(3);
 		ss << std::hex << id;
 		std::string result = ss.str();
 		list_box->AddItem(result.c_str(),NULL);
@@ -95,22 +121,73 @@ void __fastcall TForm1::UpdateComboBox(TComboBox * combo_box, TStrings * file_li
 	combo_box->Items->AddStrings(file_list);
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::ComboBox1Change(TObject *Sender)
+void __fastcall TForm1::ComboBox1CloseUp(TObject *Sender)
 {
-	System::UnicodeString str = this->ComboBox1->SelText;
-	int index = this->FilenameListBox->Items->IndexOf(str);
-	if (index == -1) {
+	System::UnicodeString str = this->ComboBox1->Text;
+	std::map<UnicodeString,TObjectList*>::iterator iterator = this->file_list->find(str);
+	if (iterator == this->file_list->end()) {
 		return;
 	}
-	//need to either get lists out of ListBox or change storage of <filename,data_list>
-//	TObjectList * can_data_frame_list = this->FilenameListBox->Data[index];
+	TObjectList * can_data_frame_list = iterator->second;
 	std::list<int> * id_list = this->GetUniqueIdList(can_data_frame_list);
 	this->LoadIdListInListBox(id_list,this->IdListBox1);
 	delete id_list;
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::ComboBox2Change(TObject *Sender)
+void __fastcall TForm1::ComboBox2CloseUp(TObject *Sender)
 {
-	//---
+	System::UnicodeString str = this->ComboBox2->Text;
+	std::map<UnicodeString,TObjectList*>::iterator iterator = this->file_list->find(str);
+	if (iterator == this->file_list->end()) {
+		return;
+	}
+	TObjectList * can_data_frame_list = iterator->second;
+	std::list<int> * id_list = this->GetUniqueIdList(can_data_frame_list);
+	this->LoadIdListInListBox(id_list,this->IdListBox2);
+	delete id_list;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FormCreate(TObject *Sender)
+{
+	this->Memo1->Clear();
+    this->Memo2->Clear();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FilterButton1Click(TObject *Sender)
+{
+	std::map<UnicodeString,TObjectList*>::iterator iterator = this->file_list->find(this->ComboBox1->Text);
+	if (iterator == this->file_list->end()) {
+        return;
+	}
+	std::list<int> * id_list = this->GetSelectedIdListFromListBox(IdListBox1);
+	TObjectList * can_data_frame_list = iterator->second;
+    this->Memo1->Clear();
+	for (int i = 0; i < can_data_frame_list->Count; i++) {
+		TCanDataFrame * can_data_frame = (TCanDataFrame*)can_data_frame_list->Items[i];
+        std::list<int>::iterator findIter = std::find(id_list->begin(), id_list->end(), can_data_frame->getId());
+		if (findIter != id_list->end()) {
+            this->Memo1->Lines->Add(can_data_frame->ToString());
+        }
+	}
+	delete id_list;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FilterButton2Click(TObject *Sender)
+{
+	std::map<UnicodeString,TObjectList*>::iterator iterator = this->file_list->find(this->ComboBox2->Text);
+	if (iterator == this->file_list->end()) {
+        return;
+	}
+	std::list<int> * id_list = this->GetSelectedIdListFromListBox(IdListBox2);
+	TObjectList * can_data_frame_list = iterator->second;
+	this->Memo2->Clear();
+	for (int i = 0; i < can_data_frame_list->Count; i++) {
+		TCanDataFrame * can_data_frame = (TCanDataFrame*)can_data_frame_list->Items[i];
+        std::list<int>::iterator findIter = std::find(id_list->begin(), id_list->end(), can_data_frame->getId());
+		if (findIter != id_list->end()) {
+            this->Memo2->Lines->Add(can_data_frame->ToString());
+        }
+	}
+	delete id_list;
 }
 //---------------------------------------------------------------------------
